@@ -1,0 +1,14 @@
+@media print {
+    header {
+        visibility: hidden;
+    }
+
+    footer {
+        visibility: hidden;
+    }
+
+    .ticket {
+        margin-top: 300px;
+        page-break-before:always;
+    }
+}

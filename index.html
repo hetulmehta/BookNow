@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="reset.css" type="text/css" media="all">
+    <link rel="stylesheet" href="theme.css" type="text/css" media="all">
+    <link rel="stylesheet" href="index.css" type="text/css" media="all">
+    <script src="js/movies.js"></script>
+    <script src="js/movieThumbnail.js"></script>
+    <title>Home</title>
+    <script>
+        // create array for storing only now showing movie 
+        // and upcoming movie seperately
+        let allMovies = getMovies();
+        let allNowShowingMovies = [];
+        let allUpComingMovies = [];
+
+        allMovies.forEach(movie => { 
+            if (movie.type == "now")
+                allNowShowingMovies.push(movie);
+            else if (movie.type == "upcoming")
+                allUpComingMovies.push(movie);
+        });
+
+        // function will be use for create table in later line
+        function generateTableCell(movie) {
+            const cell = document.createElement("div");
+            cell.className = "table_cell";
+            cell.innerHTML = "<h3>"+ movie.name +"</h3>"
+        
+            cell.appendChild(generateMovieInfo(movie));
+
+            return cell;
+        }
+
+        function generateMovieInfo(movie) {
+            const movieInfo = document.createElement("div");
+            movieInfo.className = "movie_information";
+
+            const text = document.createElement("p");
+            text.innerHTML = '<span class="info_type">Cast: </span>' + movie.cast + '<br>' + 
+                                '<span class="info_type">Director: </span>' + movie.director + '<br>' + 
+                                '<span class="info_type">Duration: </span>' + movie.duration+ '<br>';
+            
+            movieInfo.appendChild(generateMovieThumbnail(movie, true));
+            movieInfo.appendChild(text);
+            
+            return movieInfo
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <img class="logo" src="image/logo.png" alt="logo" title="logo">
+        <p class="title">CITY CINEMA</p>
+        <p class="caption">The place that you can enjoy wonderful movie with nice atmosphere!</p>
+        <nav>
+            <ul class="nav_links">
+                <li><a class="active" href="index.html">HOME</a></li>
+                <li><a href="NowShowing/NowShowing.html">NOW SHOWING</a></li> 
+                <li><a href="TicketPage/TicketPage.html">TICKET</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Show one movie and its information -->
+    <div class="main">
+        <div class="trailer_box">
+            <div>
+                
+                <video class="trailer" height="300" controls="controls" autoplay>
+                    <source src="Casablanca_trailer_(1942).webm" type="video/mp4">
+                    <p>Your browser does not support this video format</p>
+                </video>
+            </div>
+            <div class="trailer_information">
+                <p>
+                    <span class="info_type">Name: </span><span id="name"></span><br>
+                    <span class="info_type">Cast: </span><span id="cast"></span><br>
+                    <span class="info_type">Director: </span><span id="director"></span><br>
+                    <span class="info_type">Duration: </span><span id="duration"></span>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Showing the information about each Now Showing movies and Up Coming movies-->
+        <div class="table">
+            <div class="table_header">
+                <div class="header_cell">Now Showing</div>
+                <div class="header_cell">Up Coming</div>
+            </div>
+
+            <div class="table_body"></div>
+        </div>
+    </div>
+
+    <script>
+        // Script for create HTML for the trailer video
+        const trailer = document.querySelector(".trailer");
+        const trailerSource = document.createElement("source");
+
+        // set up the trailer video for the 1st movie in the list
+        let movieIndex = 0;
+        let currentMovieTrailer = allMovies[movieIndex]
+        trailerSource.src = currentMovieTrailer.src;
+        trailerSource.type = "video/mp4";
+
+        // declare the variable to store the element used in the trailer information
+        let movieName = document.querySelector("#name");
+        let cast = document.querySelector("#cast");
+        let director = document.querySelector("#director");
+        let duration = document.querySelector("#duration");
+
+        // add into the html
+        trailer.prepend(trailerSource);
+
+        // set up the trailer information
+        movieName.innerHTML = currentMovieTrailer.name;
+        cast.innerHTML = currentMovieTrailer.cast;
+        director.innerHTML = currentMovieTrailer.director;
+        duration.innerHTML = currentMovieTrailer.duration;
+        
+        trailer.muted = true;
+        trailer.load();
+        trailer.play();
+
+        // when the trailer is end, wait for 2 seconds 
+        // and swich to the next movie in the list
+        trailer.onended = function() { 
+            if (movieIndex == allMovies.length - 1)
+                movieIndex = -1;
+
+            setTimeout(function(){
+                currentMovieTrailer = allMovies[++movieIndex];
+
+                // update trailer & its information
+                trailerSource.src = currentMovieTrailer.src;
+                movieName.innerHTML = currentMovieTrailer.name;
+                cast.innerHTML  = currentMovieTrailer.cast;
+                director.innerHTML  = currentMovieTrailer.director;
+                duration.innerHTML  = currentMovieTrailer.duration;
+
+                trailer.load();
+                trailer.play();
+            }, 2000)
+        }
+
+        // Script for generate HTML for the Now Showing and Up Coming list of movies 
+        let tableBody = document.querySelector(".table_body");
+
+        // create the sufficient number of table row
+        let tableRows = new Array(Math.ceil(allMovies.length / 2));
+        for (let i = 0; i < tableRows.length; i++) {
+            let row = document.createElement("div")
+            row.className = "table_row";
+            tableRows[i] = row;
+            tableBody.appendChild(row);
+        }
+        
+        // create cell for now showing movie
+        let index = 0;
+        allNowShowingMovies.forEach(movie => {
+            tableRows[index++].appendChild(generateTableCell(movie));
+        })
+
+        // create cell for up coming movie
+        index = 0;
+        allUpComingMovies.forEach(movie => {
+            tableRows[index++].appendChild(generateTableCell(movie));
+        })
+    </script>
+</body>
+</html>

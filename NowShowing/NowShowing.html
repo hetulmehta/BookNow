@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../reset.css" type="text/css" media="all">
+    <link rel="stylesheet" href="../theme.css" type="text/css" media="all">
+    <link rel="stylesheet" href="nowshowing.css" type="text/css" media="all">
+    <title>Now Showing</title>
+    <!-- <script src="http://courses.cs.cityu.edu.hk/cs2204/cw3/cinemas.js"></script> -->
+    <script src="../js/cinemas.js"></script>
+    <script src="../js/movies.js"></script>
+    <script src="../js/movieThumbnail.js"></script>
+</head>
+<body>
+    <header>
+        <img class="logo" src="../image/logo.png" alt="logo" title="logo">
+        <p class="title">CITY CINEMA</p>
+        <p class="caption">The place that you can enjoy wonderful movie with nice atmosphere!</p>
+        <nav>
+            <ul class="nav_links">
+                <li><a href="../index.html">HOME</a></li>
+                <li><a class="active" href="../NowShowing/NowShowing.html">NOW SHOWING</a></li> 
+                <li><a href="../TicketPage/TicketPage.html">TICKET</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- A list of movie on show at the selected cinema -->
+    <div class="main">
+        <div class="content">
+            <div class="buy-form">
+                <!-- Select cinema -->
+                <div class="select-location">
+                    <label for="cinema">Select the location for cinema :</label>
+                    <select name="cinema" id="cinema" onchange="locationSelectUpdate()">
+                    </select>
+                </div>
+                <hr>
+                
+                <div class="movie-list-form">
+                </div>
+            </div>
+
+            <div class="location"> 
+                <p class="map-title">Location</p>
+                <div class="map">
+                    <p class="map-info">City Cinema-Central</p>
+                    <div class="map-image">
+                        <img src="../image/map/Central.png" alt="map-central">
+                    </div>
+                </div>
+                <div class="map">
+                    <p class="map-info">City Cinema-Mong Kok</p>
+                    <div class="map-image">
+                        <img src="../image/map/MongKok.png" alt="map-mongkok">
+                    </div>
+                </div>
+                <div class="map">
+                    <p class="map-info">City Cinema-Festival Walk</p>
+                    <div class="map-image">
+                        <img src="../image/map/FestivalWalk.png" alt="map-festivalwalk">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // script for genearte selection bar for movie locations
+        const locationSelectionBar = document.querySelector(".select-location select")
+        const allCinemas = getCinemas();
+
+        allCinemas.forEach(cinema => {
+            let cinemaName = cinema.branchName;
+            let locationValue = cinemaName.slice(cinemaName.indexOf("-") + 2 , cinemaName.length);
+
+            let locationOption = new Option(cinemaName, locationValue);
+            locationSelectionBar.appendChild(locationOption);
+        });
+
+        
+        // script for genearte form for select datetime
+        let allMovies = getMovies();
+        let movieListForm = document.querySelector(".movie-list-form");
+
+        // default form for first location
+        generateFormContainer(allCinemas[locationSelectionBar.selectedIndex].movies)
+
+        // event for new selection
+        function locationSelectUpdate() {
+            const selectedLocation = allCinemas[locationSelectionBar.selectedIndex];
+            const providedMovies = selectedLocation.movies
+
+            // Reset all previous selection
+            movieListForm.innerHTML = ""
+
+            // generate the corresponding movie and datetime for the selected locations
+            generateFormContainer(providedMovies)
+        }
+
+        function generateFormContainer(providedMovies) {
+            let number = 1;
+            // create the two div for holding the form and other informations
+            providedMovies.forEach(movie => {
+                let formContainer = document.createElement("div");
+                formContainer.className = "form-container";
+                let movieName = allMovies[movie.id - 1].name
+                formContainer.innerHTML = "<h3>" + movieName + "</h3>";
+                
+                let divForForm = document.createElement("div")
+                divForForm.className = "movie-form"
+
+                divForForm.appendChild(generateMovieThumbnail(allMovies[movie.id - 1], false))
+                divForForm.appendChild(generateMovieForm(movieName, movie.shows, number++))
+
+                formContainer.appendChild(divForForm);
+                movieListForm.appendChild(formContainer);
+            });
+        }
+
+        // generate the form html element and its necessary tag
+        function generateMovieForm(name, shows, number) {
+            let form = document.createElement("form");
+            form.setAttribute("method", "get");
+            form.setAttribute("action", "../TicketPage/TicketPage.html");
+
+            // create the select html element
+            let datetimeSelectionBar = document.createElement("select");
+            datetimeSelectionBar.name = name
+            datetimeSelectionBar.id = "datetime" + number
+
+            let label = document.createElement("label");
+            label.setAttribute("for", datetimeSelectionBar.id)
+            label.innerHTML = "Select time and date:"
+
+            form.appendChild(label);
+
+            // add all available option for the corresponding movie in the selected cinema
+            shows.forEach(option => { 
+                let datetimeOption = new Option(option.datetime, option.index);
+                datetimeSelectionBar.appendChild(datetimeOption);
+            });
+
+            // add the select html element into the form
+            form.appendChild(datetimeSelectionBar);
+
+            // create submit button and add into the form
+            let submitButton = document.createElement("button")
+            submitButton.setAttribute("type", "submit");
+            submitButton.innerHTML = "Buy Ticket";
+
+            form.appendChild(submitButton);
+
+            return form;
+        }
+    </script>
+</body>
+</html>

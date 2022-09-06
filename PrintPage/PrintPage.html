@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../reset.css" type="text/css" media="all">
+    <link rel="stylesheet" href="../theme.css" type="text/css" media="all">
+    <link rel="stylesheet" href="print.css" type="text/css" media="all">
+    <link rel="stylesheet" href="ticketdesign.css" type="text/css" media="all">
+    <!-- <script src="http://courses.cs.cityu.edu.hk/cs2204/cw3/cinemas.js"></script> -->
+    <script src="../js/cinemas.js"></script>
+    <script src="../js/movies.js"></script>
+    <title>Print Ticket</title>
+</head>
+<body>
+    <header>
+        <img class="logo" src="../image/logo.png" alt="logo" title="logo">
+        <p class="title">CITY CINEMA</p>
+        <p class="caption">The place that you can enjoy wonderful movie with nice atmosphere!</p>
+        <nav>
+            <ul class="nav_links">
+                <li><a href="../index.html">HOME</a></li>
+                <li><a href="../NowShowing/NowShowing.html">NOW SHOWING</a></li> 
+                <li><a href="../TicketPage/TicketPage.html">TICKET</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="main">
+        <div class="display-area">
+            <!-- Ticket Information -->
+        </div>
+    </div>
+
+
+    <!-- script for generate ticket -->
+    <script>
+        let allCinemas = getCinemas();
+        let queryString = location.search;
+        
+        // key[0] = move name , key[1] = show index
+        let key = queryString.slice(1, queryString.indexOf("=")).split("%2C");
+        let bookedSeat = queryString.slice(queryString.indexOf("=")+1, queryString.length).split("%2C+");
+        bookedSeat.sort()
+        
+        // display area for ticket
+        let displayArea = document.querySelector(".display-area");
+        for (let i = 0; i < bookedSeat.length; i++) {
+            ticket = document.createElement("div");
+            ticket.className = "ticket";
+
+            ticketInfo = document.createElement("div");
+            ticketInfo.className = "ticket-information";
+            
+            ticketInfo.append(generateCompanylogo());
+
+            let cinemaLocation;
+            let movieName = "Movie: " + key[0];
+            let date = "Date: "
+            let time = "Time: "
+            let houseNumber = "House: "
+            let seatNumber = "Seat: " + bookedSeat[i];
+            
+            allCinemas.forEach(cinema => {
+                const providedMovies = cinema.movies;
+                providedMovies.forEach(movie => {
+                    const shows = movie.shows;
+                    shows.forEach(show => {
+                        if (show.index == key[1]) {
+                            datetime = show.datetime.split("-");
+                            cinemaLocation = cinema.branchName;
+                            date += datetime[0].trim();
+                            time += datetime[1].trim();
+                            houseNumber += show.house;
+                        }
+                    })
+                })
+            });
+            generateTicketInfo(ticketInfo, cinemaLocation, movieName, 
+                               date, time, houseNumber, seatNumber);
+            ticket.appendChild(ticketInfo);
+            displayArea.appendChild(ticket);
+        }
+
+        function generateCompanylogo(){
+            let companyLogo = document.createElement("img");
+            companyLogo.src = "../image/logo.png";
+            companyLogo.alt = "logo";
+            companyLogo.title = "logo";
+            
+            return companyLogo;
+        }
+
+        function generateTicketInfo(ticketInfo, cinemaLocation, movieName, 
+                                    date, time, houseNumber, seatNumber) {
+            // left part of the ticket
+            let notCut = document.createElement("p")
+
+            // right part of the ticket
+            let cut = document.createElement("p")
+
+            notCut.className = "not-cut";
+            cut.className = "cut";
+
+            let info = movieName + "<br>" + 
+                       date + "<br>" +
+                       time + "<br>" +
+                       houseNumber + "<br>" +
+                       seatNumber;
+
+            notCut.innerHTML = cinemaLocation + "<br>" + 
+                               info;
+            
+            cut.innerHTML = info;
+
+            ticketInfo.appendChild(notCut);
+            ticketInfo.appendChild(cut);
+        }
+    </script>
+</body>
+</html>
