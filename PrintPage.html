@@ -65,7 +65,9 @@
             ticketInfo.append(generateCompanylogo());
 
             let cinemaLocation;
-            let movieName = "Movie: " + key[0];
+            let moviename=key[0].replaceAll("+"," ");
+            moviename=moviename.replace("%3A",":");
+            let movieName = "Movie: " + moviename;
             let date = "Date: "
             let time = "Time: "
             let houseNumber = "House: "

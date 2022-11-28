@@ -47,8 +47,14 @@ hr {
     margin-bottom: 30px;
 }
 
+.information img{
+    width: 200px;
+    height: 200px;
+    margin-right: 10px;
+}
+
 .information {
-    width: 300px;
+    width: 500px;
     display: flex;
     align-items: center;
 }

@@ -149,6 +149,8 @@
         }
 
         let movieName = queryString.slice(1 , queryString.indexOf("="));
+        movieName=movieName.replaceAll("+"," ");
+        movieName=movieName.replace("%3A",":");
         let showIndex = queryString.charAt(queryString.length - 1)
 
         let booked = document.querySelector("#bookedSeat");

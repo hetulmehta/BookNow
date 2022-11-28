@@ -54,6 +54,12 @@ hr {
     display: flex;
 }
 
+.movie-form img{
+    width: 300px;
+    height: 300px;
+    margin-right: 10px;
+}
+
 .movie-form form {
     margin-left: 10px;
 }
